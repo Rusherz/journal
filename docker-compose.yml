@@ -1,0 +1,36 @@
+version: '3'
+services:
+  api:
+    image: 'journal/node:latest'
+    working_dir: '/home/app'
+    volumes:
+      - './api:/home/app'
+    ports:
+      - '0.0.0.0:1337:1337'
+    command: 'nodemon .'
+  ui:
+    image: 'journal/node:latest'
+    working_dir: '/home/app'
+    volumes:
+      - './ui:/home/app'
+    ports:
+      - '0.0.0.0:3000:3000'
+    command: 'npm run start'
+  load-balancer:
+    image: 'nginx:latest'
+    volumes:
+      - './nginx/default.conf:/etc/nginx/conf.d/default.conf'
+      - './nginx/ssl:/etc/ssl'
+    ports:
+      - '0.0.0.0:80:80'
+      - '0.0.0.0:443:443'
+  mongo:
+    image: 'mongo:4.2.3-bionic'
+    volumes:
+      - './mongo/data:/data/db'
+    ports:
+      - '0.0.0.0:27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: test
